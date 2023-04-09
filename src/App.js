@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TodoList from './TodoList';
 import AddTodo from './AddTodo';
+import Footer from './Footer';
 
 function App() {
   const [items, setItems] = useState([]);
@@ -24,6 +25,7 @@ function App() {
       <h1 className="text-3xl text-indigo-700 font-semibold">Todo List</h1>
       <AddTodo addItem={addItem} />
       <TodoList items={items} deleteItem={deleteItem} updateItem={updateItem} />
+      <Footer />
     </div>
   );
 }
