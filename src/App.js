@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TodoList from './TodoList';
 import AddTodo from './AddTodo';
 import Footer from './Footer';
 
 function App() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(() => {
+    const storedItems = JSON.parse(localStorage.getItem('items'));
+    return storedItems ? storedItems : [];
+  });
 
   function addItem(text) {
     setItems([...items, { text }]);
@@ -19,6 +22,10 @@ function App() {
     newItems[index].text = text;
     setItems(newItems);
   }
+
+  useEffect(() => {
+    localStorage.setItem('items', JSON.stringify(items));
+  }, [items]);
 
   return (
     <div>
