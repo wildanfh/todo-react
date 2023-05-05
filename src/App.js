@@ -1,31 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { getDatabase, ref, onValue, set } from "firebase/database";
 import TodoList from './TodoList';
 import AddTodo from './AddTodo';
 import Footer from './Footer';
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  databaseURL: "https://todo-app-59ac8-default-rtdb.asia-southeast1.firebasedatabase.app/",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+// Get a reference to the database service
+const database = getDatabase(app);
 
 function App() {
-  const [items, setItems] = useState(() => {
-    const storedItems = JSON.parse(localStorage.getItem('items'));
-    return storedItems ? storedItems : [];
-  });
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    // Read the initial data from the database
+    const itemsRef = ref(database, 'items');
+    onValue(itemsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        setItems(data);
+      }
+    });
+  }, []);
 
   function addItem(text) {
-    setItems([...items, { text }]);
+    const newItems = [...items, { text }];
+    // Write the new data to the database
+    set(ref(database, 'items'), newItems);
   }
 
   function deleteItem(index) {
-    setItems(items.filter((item, i) => i !== index));
+    const newItems = items.filter((item, i) => i !== index);
+    // Write the new data to the database
+    set(ref(database, 'items'), newItems);
   }
 
   function updateItem(index, text) {
     const newItems = [...items];
     newItems[index].text = text;
-    setItems(newItems);
+    // Write the new data to the database
+    set(ref(database, 'items'), newItems);
   }
-
-  useEffect(() => {
-    localStorage.setItem('items', JSON.stringify(items));
-  }, [items]);
 
   return (
     <div>
